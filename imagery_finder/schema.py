@@ -59,6 +59,7 @@ class ImageryFinderCreateRequestSchema(Schema):
     end_date: datetime
     geometry: str
     name: str
+    location_id: Optional[int] = None
     rules: Optional[ImageryFinderRules] = None
 
 

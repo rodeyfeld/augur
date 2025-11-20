@@ -12,39 +12,53 @@ from imagery_finder.schema import (
     ImageryFinderCreateResponseSchema,
     ImageryFinderSchema,
     StudyExecuteRequestSchema,
-    StudyResultsSchema
+    StudyResultsSchema,
 )
 
 router = Router(tags=["imagery finder"])
 
-@router.get('/finder', response=List[ImageryFinderSchema])
+
+@router.get("/finder", response=List[ImageryFinderSchema])
 def imagery_finders(request):
     queryset = ImageryFinder.objects.all()
     return list(queryset)
 
-@router.get('/finder/id/{imagery_finder_id}', response=ImageryFinderSchema)
+
+@router.get("/finder/id/{imagery_finder_id}", response=ImageryFinderSchema)
 def imagery_finder_by_id(request, imagery_finder_id):
     queryset = ImageryFinder.objects.get(id=imagery_finder_id)
     return queryset
 
-@router.post('/finder/create',  response=ImageryFinderCreateResponseSchema)
-def create_finder(request, imagery_finder_create_schema: ImageryFinderCreateRequestSchema):
+
+@router.post("/finder/create", response=ImageryFinderCreateResponseSchema)
+def create_finder(
+    request, imagery_finder_create_schema: ImageryFinderCreateRequestSchema
+):
     user = User.objects.all().first()
     if user is None:
         raise ValueError("No users available to assign Imagery Finder locations.")
-    geometry = geojson_to_geosgeom(imagery_finder_create_schema.geometry)
 
-    location = Location.objects.create(
-        name=imagery_finder_create_schema.name,
-        geometry=geometry,
-        user=user,
-    )
+    # Use existing location if location_id provided, otherwise create new one
+    if imagery_finder_create_schema.location_id:
+        try:
+            location = Location.objects.get(id=imagery_finder_create_schema.location_id)
+        except Location.DoesNotExist:
+            raise ValueError(
+                f"Location with id {imagery_finder_create_schema.location_id} not found"
+            )
+    else:
+        geometry = geojson_to_geosgeom(imagery_finder_create_schema.geometry)
+        location = Location.objects.create(
+            name=imagery_finder_create_schema.name,
+            geometry=geometry,
+            user=user,
+        )
 
     imagery_finder = ImageryFinder.objects.create(
         name=imagery_finder_create_schema.name,
         location=location,
-        start_date = imagery_finder_create_schema.start_date,
-        end_date = imagery_finder_create_schema.end_date,
+        start_date=imagery_finder_create_schema.start_date,
+        end_date=imagery_finder_create_schema.end_date,
     )
     response = ImageryFinderCreateResponseSchema(
         name=imagery_finder.name,
@@ -54,9 +68,9 @@ def create_finder(request, imagery_finder_create_schema: ImageryFinderCreateRequ
     )
     return response
 
-@router.post('/study/execute',  response=DreamStatusResponseSchema)
-def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
 
+@router.post("/study/execute", response=DreamStatusResponseSchema)
+def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
     study_name = study_execute_schema.study_name
     print(study_name)
     seeker_class = Weaver.studies[study_name]["seeker"]
@@ -64,36 +78,29 @@ def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
     seeker = seeker_class()
     dream = seeker.seek(imagery_finder_id=study_execute_schema.imagery_finder_id)
 
-    response = DreamStatusResponseSchema(
-        status=dream.status
-    )
+    response = DreamStatusResponseSchema(status=dream.status)
     return response
 
-@router.get('/study/{study_name}/{study_id}/results',  response=StudyResultsSchema)
-def study_results(request, study_name, study_id):
 
+@router.get("/study/{study_name}/{study_id}/results", response=StudyResultsSchema)
+def study_results(request, study_name, study_id):
     diviner_class = Weaver.studies[study_name]["diviner"]
 
     diviner = diviner_class()
     study_data = diviner.interpret(study_id=study_id)
 
     response = StudyResultsSchema(
-        study_name=study_name,
-        study_id=study_id,
-        study_data=study_data
+        study_name=study_name, study_id=study_id, study_data=study_data
     )
     return response
 
-@router.get('/study/{study_name}/{study_id}/status',  response=DreamStatusResponseSchema)
-def study_status(request, study_name, study_id):
 
+@router.get("/study/{study_name}/{study_id}/status", response=DreamStatusResponseSchema)
+def study_status(request, study_name, study_id):
     diviner_class = Weaver.studies[study_name]["diviner"]
 
     diviner = diviner_class()
     status = diviner.poll(study_id=study_id)
 
-    response = DreamStatusResponseSchema(
-        status=status
-    )
+    response = DreamStatusResponseSchema(status=status)
     return response
-
