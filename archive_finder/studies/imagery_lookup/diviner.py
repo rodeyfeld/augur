@@ -1,10 +1,15 @@
 import json
 from augury.models import Dream
 from augury.mystics.dreamer import Dreamer
-from archive_finder.studies.imagery_lookup.schema import ImageryLookupResultSchema, ImageryLookupStudyResultDataSchema
+
+from archive_finder.models import ArchiveFinder
+from archive_finder.studies.imagery_lookup.models import ImageryLookupResult, ImageryLookupStudy
+from archive_finder.studies.imagery_lookup.schema import (
+    ImageryLookupResultSchema,
+    ImageryLookupStudyResultDataSchema,
+)
 from core.models import Sensor
 from provider.models import Collection, Provider
-from archive_finder.studies.imagery_lookup.models import ImageryLookupResult, ImageryLookupStudy
 
 
 class ImageryLookupDiviner:
@@ -55,7 +60,8 @@ class ImageryLookupDiviner:
                 metadata=imagery_lookup_result.metadata,
             )
             results.append(result)
-        geometry = json.loads(archive_finder.geometry.geojson)
+        location_geometry = getattr(archive_finder.location, "geometry", None)
+        geometry = json.loads(location_geometry.geojson) if location_geometry else None
         data = ImageryLookupStudyResultDataSchema(
             archive_finder_id=archive_finder.pk,
             archive_finder_geometry=geometry,

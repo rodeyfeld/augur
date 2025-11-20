@@ -1,6 +1,10 @@
+import json
+from typing import Union
 
+from geojson_pydantic import LineString, Point, Polygon
 from ninja import ModelSchema, Schema
-from core.models import ImageryRequest, Organization, Sensor, User
+
+from core.models import Location, Organization, Sensor, User
 
 
 class OrganizationSchema(ModelSchema):
@@ -8,27 +12,43 @@ class OrganizationSchema(ModelSchema):
         model = Organization
         fields = "__all__"
 
+
 class UserSchema(ModelSchema):
     class Meta:
         model = User
         exclude = ["password"]
-     
-class ImageryRequestSchema(ModelSchema):
-    class Meta:
-        model = ImageryRequest
-        fields = "__all__"     
+
+
+GeometryTypes = Union[Point, Polygon, LineString]
+
+
+class LocationSchema(Schema):
+    id: int
+    name: str
+    geometry: GeometryTypes
+    user_id: int
+
+    @staticmethod
+    def resolve_geometry(obj: Location) -> GeometryTypes:
+        return json.loads(obj.geometry.geojson)
+
 
 class SensorSchema(ModelSchema):
     class Meta:
         model = Sensor
         fields = "__all__"
 
-class ImageryRequestCreateRequestSchema(Schema):
+
+class LocationCreateRequestSchema(Schema):
     geometry: str
     name: str
 
-class ImageryRequestCreateResponseSchema(Schema):
+
+class LocationCreateResponseSchema(Schema):
     id: int
-    geometry: str
+    geometry: GeometryTypes
     name: str
 
+    @staticmethod
+    def resolve_geometry(obj: Location) -> GeometryTypes:
+        return json.loads(obj.geometry.geojson)

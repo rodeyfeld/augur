@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.gis.db import models as geomodels
 from django.contrib.auth.models import AbstractUser
 
 class TimestampModel(models.Model):
@@ -43,10 +43,10 @@ class User(TimestampModel, AbstractUser):
     def __str__(self) -> str:
         return f"{self.pk}|{self.username=}: {self.organization=}"
 
-class ImageryRequest(TimestampModel):
+class Location(TimestampModel):
 
     name = models.CharField(max_length=256, default='', blank=True)
-    geometry = models.CharField(max_length=2048)
+    geometry = geomodels.GeometryField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self) -> str:

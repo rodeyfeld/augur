@@ -1,11 +1,12 @@
-import json
 from typing import List
+
 from ninja import Router
+
+from archive_finder.models import ArchiveFinder
 from archive_finder.utils import geojson_to_geosgeom
 from augury.mystics.weaver import Weaver
 from augury.schema import DreamStatusResponseSchema
-from core.models import User
-from archive_finder.models import ArchiveFinder
+from core.models import Location, User
 from archive_finder.schema import (
     ArchiveFinderCreateRequestSchema,   
     ArchiveFinderCreateResponseSchema,  
@@ -29,11 +30,19 @@ def archive_finder_by_id(request, archive_finder_id):
 @router.post('/finder/create',  response=ArchiveFinderCreateResponseSchema)
 def create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequestSchema):
     user = User.objects.all().first()
+    if user is None:
+        raise ValueError("No users available to assign Archive Finder locations.")
     geometry = geojson_to_geosgeom(archive_finder_create_schema.geometry)
+
+    location = Location.objects.create(
+        name=archive_finder_create_schema.name,
+        geometry=geometry,
+        user=user,
+    )
 
     archive_finder = ArchiveFinder.objects.create(
         name=archive_finder_create_schema.name,
-        geometry=geometry.wkt,
+        location=location,
         start_date = archive_finder_create_schema.start_date,
         end_date = archive_finder_create_schema.end_date,
     )
@@ -42,7 +51,6 @@ def create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequ
         archive_finder_id=archive_finder.id,
         start_date=archive_finder.start_date,
         end_date=archive_finder.end_date,
-        geometry=json.loads(archive_finder.geometry.geojson)
     )
     return response
 

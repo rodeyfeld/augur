@@ -3,6 +3,7 @@ services:
   django-web:
     build:
       context: .
+      target: dev
     env_file:
       - .env
     ports:
@@ -17,6 +18,7 @@ services:
   django-migrate:
     build:
       context: .
+      target: prod
     env_file:
       - .env
     command: python manage.py migrate --noinput
@@ -31,6 +33,7 @@ services:
   django-createsuperuser:
     build:
       context: .
+      target: prod
     env_file:
       - .env
     command: python manage.py createsuperuser --noinput --username admin --email admin@example.com
