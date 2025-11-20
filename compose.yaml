@@ -27,6 +27,23 @@ services:
       - augur-net
     profiles:
       - migrate
+
+  django-createsuperuser:
+    build:
+      context: .
+    env_file:
+      - .env
+    command: python manage.py createsuperuser --noinput --username admin --email admin@example.com
+    environment:
+      - DJANGO_SUPERUSER_PASSWORD=admin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - augur-net
+    profiles:
+      - setup
+
   postgres:
     image: edrodefeld/atlas
     ports:
