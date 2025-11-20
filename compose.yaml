@@ -1,14 +1,32 @@
 services:
+
   django-web:
     build:
       context: .
+    env_file:
+      - .env
     ports:
       - '8000:8000'
+    volumes:
+      - .:/app
     depends_on:
       - postgres
     networks:
       - augur-net
 
+  django-migrate:
+    build:
+      context: .
+    env_file:
+      - .env
+    command: python manage.py migrate --noinput
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - augur-net
+    profiles:
+      - migrate
   postgres:
     image: edrodefeld/atlas
     ports:
@@ -16,15 +34,22 @@ services:
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "-d", "augur" ]
+      test: [ "CMD-SHELL", "pg_isready -U atlas_user -d atlas" ]
       interval: 30s
       timeout: 60s
       retries: 5
       start_period: 80s
-    user: postgres
     environment:
-      - POSTGRES_DB=augur
+      - POSTGRES_DB=atlas
       - POSTGRES_USER=atlas_user
-      - POSTGRES_PASSWORD=atlas_passyword
+      - POSTGRES_PASSWORD=atlas_password
     networks:
       - augur-net
+
+volumes:
+  postgres-db-volume:
+
+
+networks:
+  augur-net:
+    driver: bridge

@@ -102,9 +102,9 @@ DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
         "NAME": os.environ.get("AUGUR_DB_NAME", "augur"),
-        "USER": os.environ.get("AUGUR_DB_USER", "postgres"),
-        "PASSWORD": os.environ.get("AUGUR_DB_PASSWORD", "postgres"),
-        "HOST": os.environ.get("AUGUR_DB_HOST", "atlas"),
+        "USER": os.environ.get("AUGUR_DB_USER", "atlas_user"),
+        "PASSWORD": os.environ.get("AUGUR_DB_PASSWORD", "atlas_password"),
+        "HOST": os.environ.get("AUGUR_DB_HOST", "postgres"),
         "PORT": os.environ.get("AUGUR_DB_PORT", "5432"),
     }
 }
