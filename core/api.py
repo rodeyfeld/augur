@@ -1,5 +1,4 @@
 from typing import List
-import json
 from ninja import Router
 
 from core.models import Location, Organization, User
@@ -36,16 +35,7 @@ def post_create_location(
         user=user,
         name=location_request_create_schema.name,
     )
-    geometry = json.loads(location_request.geometry.geojson)
-
-    response = LocationCreateResponseSchema(
-        id=location_request.pk,
-        geometry=geometry,
-        name=location_request.name,
-        created=location_request.created,
-        modified=location_request.modified,
-    )
-    return response
+    return location_request
 
 
 @router.get("/organizations", response=List[OrganizationSchema])
