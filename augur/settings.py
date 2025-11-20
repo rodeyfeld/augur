@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "provider.apps.ProviderConfig",
     "augury.apps.AuguryConfig",
-    "archive_finder.apps.ArchiveFinderConfig",
+    "imagery_finder.apps.ImageryFinderConfig",
 ]
 
 

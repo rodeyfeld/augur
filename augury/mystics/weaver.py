@@ -1,18 +1,17 @@
 from enum import StrEnum
-from archive_finder.studies.imagery_lookup.models import ImageryLookupStudy
-from archive_finder.studies.imagery_lookup.diviner import ImageryLookupDiviner
-from archive_finder.studies.imagery_lookup.seeker import ImageryLookupSeeker
+from imagery_finder.studies.archive_lookup.models import ArchiveLookupStudy
+from imagery_finder.studies.archive_lookup.diviner import ArchiveLookupDiviner
+from imagery_finder.studies.archive_lookup.seeker import ArchiveLookupSeeker
 
 
 class Weaver:
-    
     class StudyDagIds(StrEnum):
-        IMAGERY_FINDER = "imagery_finder"
+        ARCHIVE_LOOKUP = "archive_lookup"
 
     studies = {
-        StudyDagIds.IMAGERY_FINDER: {
-            "study": ImageryLookupStudy,
-            "seeker": ImageryLookupSeeker,
-            "diviner":  ImageryLookupDiviner,
+        StudyDagIds.ARCHIVE_LOOKUP: {
+            "study": ArchiveLookupStudy,
+            "seeker": ArchiveLookupSeeker,
+            "diviner": ArchiveLookupDiviner,
         },
     }

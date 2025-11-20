@@ -1,12 +1,16 @@
 from django.contrib import admin
 
-from archive_finder.studies.imagery_lookup.models import ImageryLookupItem, ImageryLookupResult, ImageryLookupStudy
+from imagery_finder.studies.archive_lookup.models import (
+    ArchiveLookupItem,
+    ArchiveLookupResult,
+    ArchiveLookupStudy,
+)
 from core.admin import TimeStampAdminMixin
-from archive_finder.models import ArchiveFinder, ArchiveItem
+from imagery_finder.models import ImageryFinder, ArchiveItem
 
 
-@admin.register(ArchiveFinder)
-class ArchiveFinderAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+@admin.register(ImageryFinder)
+class ImageryFinderAdmin(admin.ModelAdmin, TimeStampAdminMixin):
     list_display = [
         "geometry",
         "start_date",
@@ -28,24 +32,24 @@ class ArchiveItemAdmin(admin.ModelAdmin, TimeStampAdminMixin):
      ] + TimeStampAdminMixin.list_display
 
 
-@admin.register(ImageryLookupStudy)
-class ImageryLookupStudyAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+@admin.register(ArchiveLookupStudy)
+class ArchiveLookupStudyAdmin(admin.ModelAdmin, TimeStampAdminMixin):
     list_display = [
-        "archive_finder",
+        "imagery_finder",
         "dag_id",
      ] + TimeStampAdminMixin.list_display
 
-@admin.register(ImageryLookupItem)
-class ImageryLookupItemAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+@admin.register(ArchiveLookupItem)
+class ArchiveLookupItemAdmin(admin.ModelAdmin, TimeStampAdminMixin):
     list_display = [
-        "archive_finder",
+        "imagery_finder",
         "archive_item",
         "study",
      ] + TimeStampAdminMixin.list_display
 
 
-@admin.register(ImageryLookupResult)
-class ImageryLookupResultAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+@admin.register(ArchiveLookupResult)
+class ArchiveLookupResultAdmin(admin.ModelAdmin, TimeStampAdminMixin):
     list_display = [
         "study",
         "external_id",

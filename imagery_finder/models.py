@@ -6,7 +6,7 @@ from django.contrib.gis.geos import GEOSGeometry
 MINIMUM_BOUNDING_BOX_KM2 = 1
 
 
-class ArchiveFinder(TimestampModel):
+class ImageryFinder(TimestampModel):
     name = models.CharField(blank=True, default="", max_length=256)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
     start_date = models.DateTimeField(null=True, blank=True)

@@ -2,55 +2,55 @@ from typing import List
 
 from ninja import Router
 
-from archive_finder.models import ArchiveFinder
-from archive_finder.utils import geojson_to_geosgeom
+from imagery_finder.models import ImageryFinder
+from imagery_finder.utils import geojson_to_geosgeom
 from augury.mystics.weaver import Weaver
 from augury.schema import DreamStatusResponseSchema
 from core.models import Location, User
-from archive_finder.schema import (
-    ArchiveFinderCreateRequestSchema,   
-    ArchiveFinderCreateResponseSchema,  
-    ArchiveFinderSchema,
+from imagery_finder.schema import (
+    ImageryFinderCreateRequestSchema,
+    ImageryFinderCreateResponseSchema,
+    ImageryFinderSchema,
     StudyExecuteRequestSchema,
     StudyResultsSchema
 )
 
-router = Router(tags=["archive search"])
+router = Router(tags=["imagery finder"])
 
-@router.get('/finder', response=List[ArchiveFinderSchema])
-def archive_finders(request):
-    queryset = ArchiveFinder.objects.all()
+@router.get('/finder', response=List[ImageryFinderSchema])
+def imagery_finders(request):
+    queryset = ImageryFinder.objects.all()
     return list(queryset)
 
-@router.get('/finder/id/{archive_finder_id}', response=ArchiveFinderSchema)
-def archive_finder_by_id(request, archive_finder_id):
-    queryset = ArchiveFinder.objects.get(id=archive_finder_id)
+@router.get('/finder/id/{imagery_finder_id}', response=ImageryFinderSchema)
+def imagery_finder_by_id(request, imagery_finder_id):
+    queryset = ImageryFinder.objects.get(id=imagery_finder_id)
     return queryset
 
-@router.post('/finder/create',  response=ArchiveFinderCreateResponseSchema)
-def create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequestSchema):
+@router.post('/finder/create',  response=ImageryFinderCreateResponseSchema)
+def create_finder(request, imagery_finder_create_schema: ImageryFinderCreateRequestSchema):
     user = User.objects.all().first()
     if user is None:
-        raise ValueError("No users available to assign Archive Finder locations.")
-    geometry = geojson_to_geosgeom(archive_finder_create_schema.geometry)
+        raise ValueError("No users available to assign Imagery Finder locations.")
+    geometry = geojson_to_geosgeom(imagery_finder_create_schema.geometry)
 
     location = Location.objects.create(
-        name=archive_finder_create_schema.name,
+        name=imagery_finder_create_schema.name,
         geometry=geometry,
         user=user,
     )
 
-    archive_finder = ArchiveFinder.objects.create(
-        name=archive_finder_create_schema.name,
+    imagery_finder = ImageryFinder.objects.create(
+        name=imagery_finder_create_schema.name,
         location=location,
-        start_date = archive_finder_create_schema.start_date,
-        end_date = archive_finder_create_schema.end_date,
+        start_date = imagery_finder_create_schema.start_date,
+        end_date = imagery_finder_create_schema.end_date,
     )
-    response = ArchiveFinderCreateResponseSchema(
-        name=archive_finder.name,
-        archive_finder_id=archive_finder.id,
-        start_date=archive_finder.start_date,
-        end_date=archive_finder.end_date,
+    response = ImageryFinderCreateResponseSchema(
+        name=imagery_finder.name,
+        imagery_finder_id=imagery_finder.id,
+        start_date=imagery_finder.start_date,
+        end_date=imagery_finder.end_date,
     )
     return response
 
@@ -62,7 +62,7 @@ def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
     seeker_class = Weaver.studies[study_name]["seeker"]
 
     seeker = seeker_class()
-    dream = seeker.seek(archive_finder_id=study_execute_schema.archive_finder_id)
+    dream = seeker.seek(imagery_finder_id=study_execute_schema.imagery_finder_id)
 
     response = DreamStatusResponseSchema(
         status=dream.status

@@ -2,19 +2,19 @@ from typing import List
 from ninja import ModelSchema, Schema
 from datetime import datetime
 from geojson_pydantic import LineString, MultiPolygon, Point, Polygon
-from archive_finder.studies.imagery_lookup.models import (
-    ImageryLookupItem,
-    ImageryLookupStudy,
+from imagery_finder.studies.archive_lookup.models import (
+    ArchiveLookupItem,
+    ArchiveLookupStudy,
 )
 from core.schema import SensorSchema
 
 
-class ImageryLookupStudySchema(ModelSchema):
+class ArchiveLookupStudySchema(ModelSchema):
     study_name: str = ""
     status: str = "ANOMALOUS"
 
     class Meta:
-        model = ImageryLookupStudy
+        model = ArchiveLookupStudy
         fields = "__all__"
 
     @staticmethod
@@ -26,13 +26,13 @@ class ImageryLookupStudySchema(ModelSchema):
         return obj.status
 
 
-class ImageryLookupItemSchema(ModelSchema):
+class ArchiveLookupItemSchema(ModelSchema):
     class Meta:
-        model = ImageryLookupItem
+        model = ArchiveLookupItem
         fields = "__all__"
 
 
-class ImageryLookupResultSchema(Schema):
+class ArchiveLookupResultSchema(Schema):
     id: int
     external_id: str
     collection: str
@@ -44,7 +44,7 @@ class ImageryLookupResultSchema(Schema):
     metadata: str
 
 
-class ImageryLookupStudyResultDataSchema(Schema):
-    archive_finder_id: int
-    archive_finder_geometry: Point | Polygon | LineString | None
-    results: List[ImageryLookupResultSchema]
+class ArchiveLookupStudyResultDataSchema(Schema):
+    imagery_finder_id: int
+    imagery_finder_geometry: Point | Polygon | LineString | None
+    results: List[ArchiveLookupResultSchema]

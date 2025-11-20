@@ -3,7 +3,7 @@ from types import NoneType
 from typing import List, Optional
 from ninja import Schema
 
-from archive_finder.studies.archive_lookup.schema import (
+from imagery_finder.studies.archive_lookup.schema import (
     ArchiveLookupStudyResultDataSchema,
     ArchiveLookupStudySchema,
 )

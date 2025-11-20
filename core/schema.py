@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Union
 
 from geojson_pydantic import LineString, Point, Polygon
@@ -27,6 +28,8 @@ class LocationSchema(Schema):
     name: str
     geometry: GeometryTypes
     user_id: int
+    created: datetime
+    modified: datetime
 
     @staticmethod
     def resolve_geometry(obj: Location) -> GeometryTypes:
@@ -48,6 +51,8 @@ class LocationCreateResponseSchema(Schema):
     id: int
     geometry: GeometryTypes
     name: str
+    created: datetime
+    modified: datetime
 
     @staticmethod
     def resolve_geometry(obj: Location) -> GeometryTypes:
