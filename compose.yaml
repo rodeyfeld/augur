@@ -1,0 +1,30 @@
+services:
+  django-web:
+    build:
+      context: .
+    ports:
+      - '8000:8000'
+    depends_on:
+      - postgres
+    networks:
+      - augur-net
+
+  postgres:
+    image: edrodefeld/atlas
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "augur" ]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    user: postgres
+    environment:
+      - POSTGRES_DB=augur
+      - POSTGRES_USER=atlas_user
+      - POSTGRES_PASSWORD=atlas_passyword
+    networks:
+      - augur-net

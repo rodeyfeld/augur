@@ -1,0 +1,29 @@
+[project]
+name = "augur"
+version = "0.1.0"
+description = "AUGUR"
+authors = [
+    {name = "eric rodefeld",email = "eric.d.rodefeld@gmail.com"},
+]
+dependencies = [
+    "django==5.1",
+    "factory-boy>=3.3.1",
+    "django-ninja>=1.3.0",
+    "django-extensions>=3.2.3",
+    "requests>=2.32.3",
+    "psycopg[binary,pool]>=3.2.3",
+    "psycopg-binary>=3.2.3",
+    "geojson-pydantic>=1.1.1",
+    "pymongo>=4.10.1",
+    "jedi-language-server>=0.42.0",
+    "python-dotenv>=1.0.1",
+    "gunicorn==23.0.0",
+    "whitenoise==6.8.1",
+    "django-cors-headers==4.6.0",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+
+[tool.setuptools]
+py-modules = []
