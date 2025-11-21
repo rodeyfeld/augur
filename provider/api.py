@@ -11,7 +11,7 @@ router = Router(tags=["providers"])
 
 @router.get("/", response=List[ProviderSchema])
 def list_all_providers(request):
-    queryset = Provider.objects.all()
+    queryset = Provider.objects.all().order_by('-modified')
     return list(queryset)
 
 
@@ -23,7 +23,7 @@ def list_provider_by_id(request, provider_id):
 
 @router.get("/integrations", response=List[ProviderIntegrationSchema])
 def list_all_provider_integrations(request):
-    queryset = ProviderIntegration.objects.all()
+    queryset = ProviderIntegration.objects.all().order_by('-modified')
     return list(queryset)
 
 
@@ -40,5 +40,5 @@ def list_provider_integration_by_id(request, provider_integration_id):
     "/integrations/id/provider/{provider_id}", response=ProviderIntegrationSchema
 )
 def list_provider_integrations_by_provider_id(request, provider_id):
-    queryset = ProviderIntegration.objects.filter(provider_id=provider_id)
+    queryset = ProviderIntegration.objects.filter(provider_id=provider_id).order_by('-modified')
     return queryset

@@ -15,7 +15,7 @@ router = Router(tags=["core"])
 
 @router.get("/location", response=List[LocationSchema])
 def list_location(request):
-    queryset = Location.objects.all()
+    queryset = Location.objects.all().order_by('-modified')
     return queryset
 
 
@@ -40,7 +40,7 @@ def post_create_location(
 
 @router.get("/organizations", response=List[OrganizationSchema])
 def list_all_organizations(request):
-    queryset = Organization.objects.all()
+    queryset = Organization.objects.all().order_by('-modified')
     return list(queryset)
 
 
@@ -52,7 +52,7 @@ def list_organization_by_id(request, organization_id):
 
 @router.get("/users", response=List[UserSchema])
 def list_all_users(request):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('-modified')
     return list(queryset)
 
 

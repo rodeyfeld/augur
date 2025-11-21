@@ -18,14 +18,27 @@ class Dreamer:
     def execute(self, study: Study, conf: dict[str, Any]):
         dream = Dream.objects.create(study=study, status=Dream.Status.INITIALIZED)
         conf["dream_pk"] = dream.pk
-        response = self.execute_study(dag_id=study.dag_id, conf=conf)
-        if response.status_code != 200:
+        
+        # Check if Dreamflow is configured
+        if not settings.DREAMFLOW_HOST or settings.DREAMFLOW_HOST == '':
             dream.status = Dream.Status.ANOMALOUS
             dream.save()
             return dream
-        dream.status = Dream.Status.RUNNING
-        dream.save()
-        return dream
+        
+        try:
+            response = self.execute_study(dag_id=study.dag_id, conf=conf)
+            if response.status_code != 200:
+                dream.status = Dream.Status.ANOMALOUS
+                dream.save()
+                return dream
+            dream.status = Dream.Status.RUNNING
+            dream.save()
+            return dream
+        except Exception as e:
+            # Handle connection errors gracefully
+            dream.status = Dream.Status.ANOMALOUS
+            dream.save()
+            return dream
 
     def poll(self, dream: Dream):
         dreamflow_dag_details_response = self.get_dag_details()

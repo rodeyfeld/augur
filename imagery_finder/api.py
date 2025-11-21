@@ -20,12 +20,12 @@ router = Router(tags=["imagery finder"])
 
 @router.get("/finder", response=List[ImageryFinderSchema])
 def imagery_finders(request):
-    queryset = ImageryFinder.objects.all()
+    queryset = ImageryFinder.objects.all().order_by('-modified')
     return list(queryset)
 
 
 @router.get("/finder/id/{imagery_finder_id}", response=ImageryFinderSchema)
-def imagery_finder_by_id(request, imagery_finder_id):
+def imagery_finder_by_id(request, imagery_finder_id: int):
     queryset = ImageryFinder.objects.get(id=imagery_finder_id)
     return queryset
 
@@ -84,15 +84,24 @@ def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
 
 @router.get("/study/{study_name}/{study_id}/results", response=StudyResultsSchema)
 def study_results(request, study_name, study_id):
-    diviner_class = Weaver.studies[study_name]["diviner"]
+    try:
+        diviner_class = Weaver.studies[study_name]["diviner"]
+        diviner = diviner_class()
+        study_data = diviner.interpret(study_id=study_id)
 
-    diviner = diviner_class()
-    study_data = diviner.interpret(study_id=study_id)
-
-    response = StudyResultsSchema(
-        study_name=study_name, study_id=study_id, study_data=study_data
-    )
-    return response
+        response = StudyResultsSchema(
+            study_name=study_name, study_id=study_id, study_data=study_data
+        )
+        return response
+    except Exception as e:
+        print(f"[study_results] Error: {e}")
+        # Return empty results instead of failing
+        response = StudyResultsSchema(
+            study_name=study_name, 
+            study_id=study_id, 
+            study_data={"results": [], "error": str(e)}
+        )
+        return response
 
 
 @router.get("/study/{study_name}/{study_id}/status", response=DreamStatusResponseSchema)

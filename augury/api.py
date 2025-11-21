@@ -10,7 +10,7 @@ router = Router(tags=["augury"])
 @router.get('/dream/details/',  response=List[DreamStatusResponseSchema])
 def dream_details(request):
 
-    dreams = Dream.objects.all()
+    dreams = Dream.objects.all().order_by('-modified')
     responses = []
     for dream in dreams:
         study = dream.study
