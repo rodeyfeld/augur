@@ -47,7 +47,7 @@ services:
     profiles:
       - setup
 
-  postgres:
+  postgres-db:
     image: edrodefeld/atlas
     ports:
       - 5432:5432
