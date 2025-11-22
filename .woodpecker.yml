@@ -1,0 +1,34 @@
+variables:
+  - &docker_creds
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+
+  - &deploy_creds
+    image: bitnami/kubectl
+    environment:
+      KUBECONFIG_BASE64:
+        from_secret: kubeconfig
+
+steps:
+  build:
+    image: woodpeckerci/plugin-docker
+    settings:
+      repo: edrodefeld/augur
+      target: prod
+      auto_tag: true
+      <<: *docker_creds
+    when:
+      - event: push
+        branch: main
+
+  deploy:
+    <<: *deploy_creds
+    commands:
+      - echo $KUBECONFIG_BASE64 | base64 -d > /tmp/kubeconfig
+      - kubectl --kubeconfig=/tmp/kubeconfig rollout restart deployment/augur -n galaxy
+    when:
+      - event: push
+        branch: main
+
