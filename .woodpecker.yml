@@ -25,18 +25,18 @@ steps:
         from_secret: cuneiform_token
     commands:
       # Install dependencies
-      - apk add --no-cache curl jq tar
-      
+      - apk add --no-cache curl jq zip
+
       # Install kubectl
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
 
       # Install bao CLI
-      - curl -L -o bao.tar.gz https://github.com/openbao/openbao/releases/download/v2.1.0/bao_2.1.0_linux_amd64.tar.gz
-      - tar -xzf bao.tar.gz
+      - curl -L -o bao.zip https://github.com/openbao/openbao/releases/download/v2.1.0/bao_2.1.0_linux_amd64.zip
+      - unzip bao.zip
       - chmod +x bao
-      
+
       # Fetch secrets from Cuneiform
       - ./bao kv get -format=json galaxy-kv/prod/augur > /tmp/secrets.json
       
