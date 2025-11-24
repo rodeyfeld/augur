@@ -14,10 +14,7 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
-  && mv /root/.local/bin/uv /usr/local/bin/uv \
-  && mv /root/.local/bin/uvx /usr/local/bin/uvx
-
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 FROM base AS builder
 COPY pyproject.toml uv.lock ./
