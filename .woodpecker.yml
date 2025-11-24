@@ -18,30 +18,22 @@ steps:
         branch: main
 
   sync-secrets:
-    image: alpine:3.22.2
+    image: bitnami/kubectl
     environment:
       BAO_ADDR: https://cuneiform.pinwheel.fan
       BAO_TOKEN:
         from_secret: cuneiform_token
     commands:
-      # Install dependencies
-      - apk add --no-cache curl jq
-
-      # Install kubectl
-      - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-      - chmod +x kubectl
-      - mv kubectl /usr/local/bin/
-
-      # Install bao CLI
-      - curl -L -o bao_2.1.0_linux_amd64.tar.gz https://github.com/openbao/openbao/releases/download/v2.1.0/bao_2.1.0_linux_amd64.tar.gz
-      - tar -xf bao_2.1.0_linux_amd64.tar.gz
-      - chmod +x bao
-
-      # Fetch secrets from Cuneiform
-      - ./bao kv get -format=json galaxy-kv/prod/augur > /tmp/secrets.json
-      
-      # Create K8s secret
       - |
+        # Install bao CLI
+        curl -fsSL -o bao_2.1.0_linux_amd64.tar.gz https://github.com/openbao/openbao/releases/download/v2.1.0/bao_2.1.0_linux_amd64.tar.gz
+        tar -xzf bao_2.1.0_linux_amd64.tar.gz
+        chmod +x bao
+        
+        # Fetch secrets from Cuneiform
+        ./bao kv get -format=json galaxy-kv/prod/augur > /tmp/secrets.json
+        
+        # Create K8s secret
         kubectl create secret generic augur-env-secrets \
           --from-literal=AUGUR_SECRET_KEY="$(cat /tmp/secrets.json | jq -r '.data.data.AUGUR_SECRET_KEY')" \
           --from-literal=AUGUR_DB_PASSWORD="$(cat /tmp/secrets.json | jq -r '.data.data.AUGUR_DB_PASSWORD')" \
