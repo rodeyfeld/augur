@@ -17,35 +17,10 @@ steps:
       - event: [push, manual]
         branch: main
 
-  sync-secrets:
-    image: bitnami/kubectl
-    environment:
-      BAO_ADDR: https://cuneiform.pinwheel.fan
-      BAO_TOKEN:
-        from_secret: cuneiform_token
-    commands:
-      - |
-        # Install bao CLI
-        cd /tmp
-        curl -fsSL https://github.com/openbao/openbao/releases/download/v2.1.0/bao_2.1.0_Linux_x86_64.tar.gz | tar -xz
-        chmod +x /tmp/bao
-        
-        # Fetch secrets from Cuneiform
-        /tmp/bao kv get -format=json galaxy-kv/prod/augur > /tmp/secrets.json
-        
-        # Create K8s secret
-        kubectl create secret generic augur-env-secrets \
-          --from-literal=AUGUR_SECRET_KEY="$(cat /tmp/secrets.json | jq -r '.data.data.AUGUR_SECRET_KEY')" \
-          --from-literal=AUGUR_DB_PASSWORD="$(cat /tmp/secrets.json | jq -r '.data.data.AUGUR_DB_PASSWORD')" \
-          --from-literal=AUGUR_DREAMFLOW_PASSWORD="$(cat /tmp/secrets.json | jq -r '.data.data.AUGUR_DREAMFLOW_PASSWORD')" \
-          -n galaxy --dry-run=client -o yaml | kubectl apply -f -
-    when:
-      - event: [push, manual]
-        branch: main
-
   deploy:
     image: bitnami/kubectl
     commands:
+      # Secrets are synced centrally via mirage pipeline
       - kubectl rollout restart deployment/augur -n galaxy
     when:
       - event: [push, manual]
