@@ -74,8 +74,6 @@ class ArchiveLookupDiviner:
         archive_lookups = study.archivelookupitem_set.all()
         for archive_lookup in archive_lookups:
             archive_item = archive_lookup.archive_item
-            if archive_item.thumbnail == "":
-                continue
             provider, _ = Provider.objects.get_or_create(name=archive_item.provider)
             collection, _ = Collection.objects.get_or_create(
                 name=archive_item.collection, provider=provider
