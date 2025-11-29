@@ -11,7 +11,7 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - postgres
+      - postgres-db
     networks:
       - augur-net
 
@@ -23,12 +23,12 @@ services:
       - .env
     command: python manage.py migrate --noinput
     depends_on:
-      postgres:
+      postgres-db:
         condition: service_healthy
     networks:
       - augur-net
     profiles:
-      - migrate
+      - commands
 
   django-createsuperuser:
     build:
@@ -40,12 +40,12 @@ services:
     environment:
       - DJANGO_SUPERUSER_PASSWORD=admin
     depends_on:
-      postgres:
+      postgres-db:
         condition: service_healthy
     networks:
       - augur-net
     profiles:
-      - setup
+      - commands
 
   postgres-db:
     image: edrodefeld/atlas
@@ -60,7 +60,7 @@ services:
       retries: 5
       start_period: 80s
     environment:
-      - POSTGRES_DB=atlas
+      - POSTGRES_DB=augur
       - POSTGRES_USER=atlas_user
       - POSTGRES_PASSWORD=atlas_password
     networks:
@@ -72,4 +72,5 @@ volumes:
 
 networks:
   augur-net:
+    name: augur-net
     driver: bridge

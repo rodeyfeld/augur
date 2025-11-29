@@ -111,7 +111,7 @@ DATABASES = {
         "NAME": os.environ.get("AUGUR_DB_NAME", "augur"),
         "USER": os.environ.get("AUGUR_DB_USER", "atlas_user"),
         "PASSWORD": os.environ.get("AUGUR_DB_PASSWORD", "atlas_password"),
-        "HOST": os.environ.get("AUGUR_DB_HOST", "postgres"),
+        "HOST": os.environ.get("AUGUR_DB_HOST", "postgres-db"),
         "PORT": os.environ.get("AUGUR_DB_PORT", "5432"),
     }
 }
