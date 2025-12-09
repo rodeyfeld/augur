@@ -11,7 +11,8 @@ class ArchiveLookupStudy(Study):
 
     @property
     def dag_id(self):
-        return "archive_lookup"
+        # Matches the Prefect flow name in noctis/flows/archive_finder_study.py
+        return "imagery-finder-study"
 
 
 class ArchiveLookupItem(TimestampModel):

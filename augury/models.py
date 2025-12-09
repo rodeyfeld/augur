@@ -29,11 +29,27 @@ class Dream(TimestampModel):
         "failed": Status.FAILED,
     }
 
+    # Prefect state types mapping (Noctis)
+    PREFECT_STATUS_MAP = {
+        "PENDING": Status.QUEUED,
+        "SCHEDULED": Status.QUEUED,
+        "RUNNING": Status.RUNNING,
+        "COMPLETED": Status.SUCCESS,
+        "FAILED": Status.FAILED,
+        "CANCELLED": Status.FAILED,
+        "CANCELLING": Status.RUNNING,
+        "CRASHED": Status.FAILED,
+        "PAUSED": Status.RUNNING,
+    }
+
 
     study_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     study_id = models.PositiveIntegerField()
     study = GenericForeignKey("study_type", "study_id")
     status = models.CharField(max_length=128, choices=Status, default=Status.INITIALIZED, blank=True)
+    
+    # Prefect flow run ID for polling (Noctis)
+    flow_run_id = models.CharField(max_length=64, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super().save()

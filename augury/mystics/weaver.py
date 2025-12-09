@@ -5,11 +5,18 @@ from imagery_finder.studies.archive_lookup.seeker import ArchiveLookupSeeker
 
 
 class Weaver:
-    class StudyDagIds(StrEnum):
-        ARCHIVE_LOOKUP = "archive_lookup"
+    """
+    Registry of study types and their associated handlers.
+    
+    Maps Prefect flow names to Study models, Seekers, and Diviners.
+    """
+    
+    class StudyFlowNames(StrEnum):
+        """Prefect flow names for each study type."""
+        IMAGERY_FINDER_STUDY = "imagery-finder-study"
 
     studies = {
-        StudyDagIds.ARCHIVE_LOOKUP: {
+        StudyFlowNames.IMAGERY_FINDER_STUDY: {
             "study": ArchiveLookupStudy,
             "seeker": ArchiveLookupSeeker,
             "diviner": ArchiveLookupDiviner,

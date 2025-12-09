@@ -18,10 +18,12 @@ services:
   django-migrate:
     build:
       context: .
-      target: prod
+      target: dev
     env_file:
       - .env
-    command: python manage.py migrate --noinput
+    volumes:
+      - .:/app
+    command: uv run manage.py migrate --noinput
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -33,10 +35,12 @@ services:
   django-createsuperuser:
     build:
       context: .
-      target: prod
+      target: dev
     env_file:
       - .env
-    command: python manage.py createsuperuser --noinput --username admin --email admin@example.com
+    volumes:
+      - .:/app
+    command: uv run manage.py createsuperuser --noinput --username admin --email admin@example.com
     environment:
       - DJANGO_SUPERUSER_PASSWORD=admin
     depends_on:

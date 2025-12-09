@@ -26,7 +26,7 @@ class ImageryFinderSchema(Schema):
     @staticmethod
     def resolve_study_options(_):
         return [
-            {"study_name": Weaver.StudyDagIds.ARCHIVE_LOOKUP},
+            {"study_name": Weaver.StudyFlowNames.IMAGERY_FINDER_STUDY},
         ]
 
     @staticmethod

@@ -2,14 +2,16 @@ from typing import List
 from ninja import Router
 
 from augury.models import Dream
-from augury.mystics.weaver import Weaver
-from augury.schema import DreamDetailsResponseSchema, DreamDivineRequestSchema, DreamStatusResponseSchema
+from augury.schema import DreamDetailsResponseSchema, DreamStatusResponseSchema
 
 router = Router(tags=["augury"])
 
-@router.get('/dream/details/',  response=List[DreamStatusResponseSchema])
-def dream_details(request):
 
+@router.get('/dream/details/', response=List[DreamStatusResponseSchema])
+def dream_details(request):
+    """
+    Get details of all dreams, ordered by most recently modified.
+    """
     dreams = Dream.objects.all().order_by('-modified')
     responses = []
     for dream in dreams:
@@ -23,9 +25,12 @@ def dream_details(request):
         responses.append(response)
     return responses
 
-@router.get('/dream/details/{dream_id}',  response=DreamStatusResponseSchema)
-def dream_details_id(request, dream_id):
 
+@router.get('/dream/details/{dream_id}', response=DreamStatusResponseSchema)
+def dream_details_id(request, dream_id: int):
+    """
+    Get details of a specific dream by ID.
+    """
     dream = Dream.objects.get(pk=dream_id)
     study = dream.study
 
@@ -37,27 +42,22 @@ def dream_details_id(request, dream_id):
     )
     return response
 
-@router.get('/dream/status/{dream_id}',  response=DreamStatusResponseSchema)
-def dreamer_execute(request, dream_id: int):
 
+@router.get('/dream/status/{dream_id}', response=DreamStatusResponseSchema)
+def dream_status(request, dream_id: int):
+    """
+    Get the current status of a dream.
+    
+    This polls the Noctis (Prefect) API if the dream has a flow_run_id,
+    otherwise returns the current status from the database.
+    """
     dream = Dream.objects.get(id=dream_id)
-    study = dream.study
-    seeker = study.seeker
-    dream = seeker.poll(study)
-
-    response = DreamStatusResponseSchema(
-        status=dream.status
-    )
-    return response
-
-@router.post('/divine',  response=DreamStatusResponseSchema)
-def diviner_process(request, dream_schema: DreamDivineRequestSchema):
-
-    dream = Dream.objects.get(pk=dream_schema.dream_id)
-    study = dream.study
-    diviner_class = Weaver.studies[study.dag_id]["diviner"]
-    diviner = diviner_class()
-    dream = diviner.divine(dream)
+    
+    # If there's a flow_run_id, poll Noctis for the latest status
+    if dream.flow_run_id:
+        from augury.mystics.nightwalker import Noctis
+        noctis = Noctis()
+        dream = noctis.poll(dream)
 
     response = DreamStatusResponseSchema(
         status=dream.status
