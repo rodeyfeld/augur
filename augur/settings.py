@@ -164,3 +164,38 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Use our User model
 AUTH_USER_MODEL = "core.User"
+
+
+# Logging configuration - capture errors even with DEBUG=False
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{levelname}] {asctime} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",  # Log all request errors
+            "propagate": False,
+        },
+    },
+}
