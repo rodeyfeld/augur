@@ -15,11 +15,11 @@ from core.schema import LocationSchema
 class ImageryFinderSchema(Schema):
     id: int
     name: str
-    start_date: datetime
-    end_date: datetime
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
     is_active: bool
     rules: str
-    location: LocationSchema
+    location: Optional[LocationSchema] = None
     study_options: List[DreamWeaverSchema]
     studies: List[ArchiveLookupStudySchema]
 
