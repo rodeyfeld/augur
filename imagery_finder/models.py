@@ -29,6 +29,12 @@ class ImageryFinder(TimestampModel):
 
 
 class ArchiveItem(TimestampModel):
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["external_id"], name="archiveitem_external_id_idx"),
+        ]
+
     external_id = models.CharField(blank=True, default="", max_length=2048)
     collection = models.CharField(blank=True, default="", max_length=256)
     provider = models.CharField(blank=True, default="", max_length=256)
@@ -38,3 +44,5 @@ class ArchiveItem(TimestampModel):
     thumbnail = models.CharField(blank=True, default="", max_length=2048)
     metadata = models.CharField(blank=True, default="", max_length=4096)
     geometry = geomodels.GeometryField()
+
+
