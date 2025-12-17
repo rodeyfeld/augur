@@ -105,11 +105,8 @@ def study_results(request, study_name, study_id):
 
 
 @router.get("/study/{study_name}/{study_id}/status", response=DreamStatusResponseSchema)
-def study_status(request, study_name, study_id):
-    diviner_class = Weaver.studies[study_name]["diviner"]
-
-    diviner = diviner_class()
-    status = diviner.poll(study_id=study_id)
-
-    response = DreamStatusResponseSchema(status=status)
-    return response
+def study_status(request, study_name: str, study_id: int):
+    """Get the current status of a study."""
+    study_class = Weaver.studies[study_name]["study"]
+    study = study_class.objects.get(pk=study_id)
+    return DreamStatusResponseSchema(status=study.status)

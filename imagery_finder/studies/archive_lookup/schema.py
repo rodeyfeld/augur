@@ -36,6 +36,7 @@ class ArchiveLookupResultSchema(Schema):
     id: int
     external_id: str
     collection: str
+    provider: str
     start_date: datetime
     end_date: datetime
     sensor: SensorSchema

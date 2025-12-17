@@ -1,8 +1,6 @@
 import json
-from augury.models import Dream
 from augury.mystics.diviner import Diviner
 
-from imagery_finder.models import ImageryFinder
 from imagery_finder.studies.archive_lookup.models import (
     ArchiveLookupResult,
     ArchiveLookupStudy,
@@ -17,17 +15,9 @@ class ArchiveLookupDiviner(Diviner):
     """
     Diviner for Archive Lookup studies.
     
-    The transformation/divine step is now handled by the Prefect flow.
-    This class only handles interpretation (reading/serializing results).
+    Serializes ArchiveLookupResult records for API responses.
+    Transformation is handled by the Noctis flow.
     """
-
-    def divine(self, dream: Dream) -> Dream:
-        """
-        Divine is now a no-op - transformation happens in the Prefect flow.
-        
-        The dream status is updated directly by Noctis when the flow completes.
-        """
-        return dream
 
     def interpret(self, study_id: int) -> ArchiveLookupStudyResultDataSchema:
         """
@@ -49,10 +39,12 @@ class ArchiveLookupDiviner(Diviner):
         
         for archive_lookup_result in archive_lookup_results:
             geometry = json.loads(archive_lookup_result.geometry.geojson)
+            collection = archive_lookup_result.collection
             result = ArchiveLookupResultSchema(
                 id=archive_lookup_result.id,
                 external_id=archive_lookup_result.external_id,
-                collection=archive_lookup_result.collection.name,
+                collection=collection.name,
+                provider=collection.provider.name if collection.provider else "Unknown",
                 start_date=archive_lookup_result.start_date,
                 end_date=archive_lookup_result.end_date,
                 sensor=archive_lookup_result.sensor,
@@ -71,16 +63,3 @@ class ArchiveLookupDiviner(Diviner):
             results=results,
         )
         return data
-
-    def poll(self, study_id: int) -> str:
-        """
-        Poll the status of a study.
-        
-        Args:
-            study_id: Primary key of the ArchiveLookupStudy
-            
-        Returns:
-            Current status string
-        """
-        study = ArchiveLookupStudy.objects.get(pk=study_id)
-        return study.status
