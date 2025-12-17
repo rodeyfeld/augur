@@ -6,6 +6,7 @@ from core.models import (
     IntegrationConfigOption,
     InternalIntegration,
     Organization,
+    Sensor,
     User,
 )
 
@@ -42,6 +43,16 @@ class LocationAdmin(admin.ModelAdmin, TimeStampAdminMixin):
         "name",
         "geometry",
     ] + TimeStampAdminMixin.list_display
+
+
+@admin.register(Sensor)
+class SensorAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+    list_display = [
+        "name",
+        "technique",
+    ] + TimeStampAdminMixin.list_display
+    list_filter = ["technique"]
+    search_fields = ["name"]
 
 
 @admin.register(IntegrationCapabilityOption)
