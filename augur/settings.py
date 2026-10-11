@@ -44,10 +44,6 @@ SESSION_COOKIE_SECURE = parse_env_bool(
 )
 CSRF_COOKIE_SECURE = parse_env_bool(os.environ.get("AUGUR_CSRF_COOKIE_SECURE", True))
 
-DREAMFLOW_HOST = os.environ.get("AUGUR_DREAMFLOW_HOST", "")
-DREAMFLOW_USER = os.environ.get("AUGUR_DREAMFLOW_USER", "")
-DREAMFLOW_PASSWORD = os.environ.get("AUGUR_DREAMFLOW_PASSWORD", "")
-
 NOCTIS_API_URL = os.environ.get("NOCTIS_URL", "")
 NOCTIS_USER = os.environ.get("NOCTIS_USER", "")
 NOCTIS_PASSWORD = os.environ.get("NOCTIS_PASSWORD", "")

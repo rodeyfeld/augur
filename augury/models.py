@@ -22,13 +22,6 @@ class Dream(TimestampModel):
         FAILED = "FAILED"
         ANOMALOUS = "ANOMALOUS"
 
-    DREAMFLOW_STATUS_MAP = {
-        "queued": Status.QUEUED,
-        "running": Status.RUNNING,
-        "success": Status.SUCCESS,
-        "failed": Status.FAILED,
-    }
-
     # Prefect state types mapping (Noctis)
     PREFECT_STATUS_MAP = {
         "PENDING": Status.QUEUED,
