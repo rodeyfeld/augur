@@ -113,8 +113,23 @@ DATABASES = {
         "PASSWORD": os.environ.get("AUGUR_DB_PASSWORD", "atlas_password"),
         "HOST": os.environ.get("AUGUR_DB_HOST", "postgres-db"),
         "PORT": os.environ.get("AUGUR_DB_PORT", "5432"),
-    }
+    },
 }
+
+# The sentinel archive (ArchiveItem) lives in its own database, ephemeris, so a big
+# scrape or query can't affect augur's own tables. Without AUGUR_ARCHIVE_DB_HOST it
+# stays in the default database (local dev); unset AUGUR_ARCHIVE_DB_* values fall back
+# to the default database's. Migrate it with `manage.py migrate --database=archive`.
+if os.environ.get("AUGUR_ARCHIVE_DB_HOST"):
+    DATABASES["archive"] = {
+        **DATABASES["default"],
+        "NAME": os.environ.get("AUGUR_ARCHIVE_DB_NAME", DATABASES["default"]["NAME"]),
+        "USER": os.environ.get("AUGUR_ARCHIVE_DB_USER", DATABASES["default"]["USER"]),
+        "PASSWORD": os.environ.get("AUGUR_ARCHIVE_DB_PASSWORD", DATABASES["default"]["PASSWORD"]),
+        "HOST": os.environ["AUGUR_ARCHIVE_DB_HOST"],
+        "PORT": os.environ.get("AUGUR_ARCHIVE_DB_PORT", DATABASES["default"]["PORT"]),
+    }
+    DATABASE_ROUTERS = ["augur.routers.ArchiveRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

@@ -17,7 +17,11 @@ class ArchiveLookupStudy(Study):
 
 class ArchiveLookupItem(TimestampModel):
     imagery_finder = models.ForeignKey(ImageryFinder, on_delete=models.CASCADE)
-    archive_item = models.ForeignKey(ArchiveItem, null=True, on_delete=models.SET_NULL)
+    # ArchiveItem lives in the archive database (ephemeris), so no FK constraint is
+    # possible; ids written before the split point at rows that are gone
+    archive_item = models.ForeignKey(
+        ArchiveItem, null=True, on_delete=models.SET_NULL, db_constraint=False
+    )
     study = models.ForeignKey(ArchiveLookupStudy, on_delete=models.CASCADE)
 
 
