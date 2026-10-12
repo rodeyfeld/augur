@@ -9,10 +9,16 @@ class Migration(migrations.Migration):
         ('imagery_finder', '0001_initial'),
     ]
 
+    # State only: 0003 immediately replaces this db_index with a named index, and
+    # building both on the ~18M-row archive table is wasted work
     operations = [
-        migrations.AlterField(
-            model_name='archiveitem',
-            name='external_id',
-            field=models.CharField(blank=True, db_index=True, default='', max_length=2048),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='archiveitem',
+                    name='external_id',
+                    field=models.CharField(blank=True, db_index=True, default='', max_length=2048),
+                ),
+            ],
         ),
     ]

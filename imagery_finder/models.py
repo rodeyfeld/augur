@@ -33,6 +33,7 @@ class ArchiveItem(TimestampModel):
     class Meta:
         indexes = [
             models.Index(fields=["external_id"], name="archiveitem_external_id_idx"),
+            models.Index(fields=["collection", "start_date"], name="archiveitem_coll_start_idx"),
         ]
 
     external_id = models.CharField(blank=True, default="", max_length=2048)

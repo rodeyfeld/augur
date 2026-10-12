@@ -1,4 +1,7 @@
 
+from datetime import datetime
+from typing import List, Optional
+
 from ninja import ModelSchema, Schema
 from provider.models import Provider, ProviderIntegration, Collection
 
@@ -25,3 +28,18 @@ class ProviderIntegrationOrderResponseSchema(Schema):
 class CollectionSchema(Schema):
    
     name: str
+
+
+class CollectionFreshnessSchema(Schema):
+
+    id: int
+    name: str
+    latest_acquired: Optional[datetime]
+
+
+class ProviderFreshnessSchema(Schema):
+
+    id: int
+    name: str
+    last_ingested: Optional[datetime]
+    collections: List[CollectionFreshnessSchema]
